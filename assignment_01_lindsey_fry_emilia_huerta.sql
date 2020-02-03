@@ -149,7 +149,6 @@ WHERE rating = 'G'
 
 CREATE DATABASE LinkedIn;
 
---CHECK. Probably a different way to do this
 
 /*
 15. Create a user table to store LinkedIn users.
@@ -189,7 +188,7 @@ CREATE TABLE UserWorkExperience(
 REFERENCES User(UserID)
 ) ENGINE=InnoDB;
 
---Check query
+--Check query -- is the constraint necessary?
 SELECT *
 FROM UserWorkExperience;
 
@@ -215,7 +214,6 @@ INSERT INTO UserWorkExperience
 VALUES
 ('Author', 'New York', 'Writing', 'Popular Author of new book', 1);
 
---CHECK
 
 /*
 19. The warehouse manager wants to know all of the products the company carries. Generate a list of all the products with all of the columns.
