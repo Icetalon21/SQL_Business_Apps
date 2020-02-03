@@ -32,11 +32,11 @@ LIMIT 10;
 3. Select customer_id, first_name, and last_name for all customers where the last name is Clark.
 */
 
-SELECT customer_id, first_name, last_name, active
+SELECT customer_id, first_name, last_name
 FROM customer
 WHERE last_name = "Clark";
 
---Check this work. Result was one name.
+--Result was one name.
 
 /*
 4. Select film_id, title, rental_duration, and description for films with a rental duration of 3 days
@@ -57,7 +57,6 @@ WHERE rental_duration > 1
 	AND rental_rate >= 0.99
 ORDER BY rental_rate, rental_duration;
 
---Check whether it is >= or just > than one
 
 /*
 6. Select film_id, title, replacement_cost, and length for films that cost 9.99 or 10.99 to replace and have a running time of 60 minutes or more.
@@ -68,7 +67,6 @@ FROM film
 WHERE (replacement_cost = 9.99 OR replacement_cost = 10.99)
 	AND length >= 60;
 
---Double check logic and paretheses
 
 /*
 7. Select film_id, title, replacement_cost, and rental_rate for films that cost $20 or more to replace and the cost to rent is less than a dollar.
@@ -95,7 +93,7 @@ SELECT film_id, title, rental_duration
 FROM film
 WHERE rental_duration BETWEEN 5 AND 7;
 
---CHECK Returns 594 rows
+--CHECK Returns 594 rows  -- CONFUSED
 
 /*
 10. INSERT your favorite movie into the film table.
@@ -108,7 +106,7 @@ INSERT INTO film
 VALUES
 ('Little Women', 'Film based on the original novel.', 2019, 1, NULL, 6, 4.99, 90, 20.99, 'PG', 'Trailers,Deleted Scenes');
 
---Check query
+--Check query -- WORKS 
 SELECT *
 FROM film
 WHERE title = 'Little Women';
