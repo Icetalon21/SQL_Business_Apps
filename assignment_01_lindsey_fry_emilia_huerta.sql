@@ -124,13 +124,9 @@ WHERE first_name = 'JENNIFER';
 12. The address2 column in the address table inconsistently defines what it means to not have an address2 associated with an address. UPDATE the address2 column to an empty string where the address2 value is currently null. (2 points)
 */
 
-ALTER TABLE address
-MODIFY address2 VARCHAR(50) DEFAULT ' ';
-
---OR
-
-SELECT address2, IFNULL(address2,'')
-FROM address;
+UPDATE address
+SET address2 = ' '
+WHERE address2 IS NULL;
 
 /*
 13. For rated G films less than an hour long, update the special_features column to replace Commentaries with Audio Commentary.
