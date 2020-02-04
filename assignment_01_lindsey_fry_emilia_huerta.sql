@@ -284,9 +284,9 @@ Identify the products with glasses, jars, or bottles and are not discontinued (0
 SELECT ProductName, Discontinued, QuantityPerUnit
 FROM Products
 WHERE (QuantityPerUnit LIKE '%glass%'
-	OR QuantityPerUnit LIKE '%jar%'
-  OR QuantityPerUnit LIKE '%bottle%')
-  AND Discontinued = 0;
+       OR QuantityPerUnit LIKE '%jar%'
+       OR QuantityPerUnit LIKE '%bottle%')
+       AND Discontinued = 0;
 
 /*
 26. How many customers are from Brazil and have a role in sales?
