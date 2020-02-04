@@ -243,7 +243,7 @@ WHERE Title = 'Sales Representative'
 	AND Country = 'USA'
 ORDER BY HireDate, LastName;
 
---CHECK only got 3 results
+--Got 3 results
 SELECT Country, Title
 FROM Employees
 WHERE Title = 'Sales Representative'
@@ -269,7 +269,7 @@ SELECT OrderID, EmployeeID
 FROM Orders
 WHERE EmployeeID = 3;
 
---CHECK. Gives 127 rows
+--Gives 127 rows
 
 /*
 24. The sales team wants to develop stronger supply chain relationships with its suppliers by reaching out to the managers who have the decision making power to create a just-in-time inventory arrangement.
@@ -293,6 +293,15 @@ WHERE (QuantityPerUnit LIKE '%glass%'
   OR QuantityPerUnit LIKE '%bottle%')
   AND Discontinued = 0;
 --CHECK answer and syntax/entering
+
+--NEW ANSWER
+SELECT ProductName, Discontinued, QuantityPerUnit
+FROM Products
+WHERE (QuantityPerUnit LIKE '%glass%'
+       OR QuantityPerUnit LIKE '%jar%'
+       OR QuantityPerUnit LIKE '%bottle%')
+       AND Discontinued = 0
+
 
 /*
 26. How many customers are from Brazil and have a role in sales?
@@ -334,6 +343,7 @@ Your query should only return 1 row.
 SELECT UnitPrice * UnitsInStock AS TotalDollarValue
 FROM Products
 WHERE UnitsInStock > 0;
+LIMIT 1
 
 --Check logic... does TotalDollarValue equal unitprice * UnitsInStock
 
