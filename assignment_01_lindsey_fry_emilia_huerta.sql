@@ -351,10 +351,11 @@ ORDER BY Country;
 Know that you can use column names on the right-hand side of a comparison operator.
 */
 
-SELECT ProductName, ABS(UnitsInStock - UnitsOnOrder + ReorderLevel) AS ProductReorder
+SELECT ProductName, UnitsInStock, ReorderLevel
 FROM Products
 WHERE Discontinued = 0
-	AND (UnitsInStock - UnitsOnOrder + ReorderLevel) <= 0;
+AND UnitsInStock <= ReorderLevel;
+
 
 /*
 33. You're the newest hire.
