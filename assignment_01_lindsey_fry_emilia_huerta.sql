@@ -469,24 +469,15 @@ WHERE Orders.CustomerID = Customers.CustomerID
 /*
 Data Request #5
 Question: What are the prices of the drinks in the Beverage category?
-Business Justification: Will visually display the prices of all the drinks. It will be easier to run averages and see what might be overpriced.
-											 
-*/								
+Business Justification: Will visually display the prices of all the drinks. It will be easier to run averages and see what might be overpriced.											 
+*/	
+		       
 SELECT ProductName, Categories.CategoryName, UnitPrice
-FROM Products, Categories
-WHERE Categories.CategoryName = 'Beverages'
-Order By UnitPrice
-			
-SELECT ProductName, Categories.CategoryName, UnitPrice
-FROM Products, Categories
-WHERE Categories.CategoryName = 'Beverages'
-Order By UnitPrice	
-											 
-SELECT ProductName, Categories.CategoryName, Products.CategoryID, UnitPrice
 FROM Products, Categories
 WHERE Products.CategoryID = 1
 	AND Categories.CategoryName = 'Beverages'
-Order By UnitPrice									
+Order By UnitPricee
+		       
 /*											 
 Data Request #6
 Question: Which Employee has handled the most orders?
