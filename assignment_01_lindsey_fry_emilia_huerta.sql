@@ -465,3 +465,23 @@ SELECT Orders.OrderID, Customers.CompanyName
 FROM Orders, Customers
 WHERE Orders.CustomerID = Customers.CustomerID
 	AND Orders.OrderID = 10981;
+
+/*
+Data Request #5
+Question: How many products are in each category?
+*/								
+SELECT ProductName, Categories.CategoryName, UnitPrice
+FROM Products, Categories
+WHERE Categories.CategoryName = 'Beverages'
+Order By UnitPrice
+											 
+/*											 
+Data Request #6
+Question: Which Employee has handled the most orders?
+Business Justification: Will show which employees have contributed the most to handling orders. We can keep track of progress and imrovments.
+											 We can also reach out to the employee if it is clear they are not performing as well as others.
+*/											 
+SELECT Orders.OrderID, Employees.LastName, Employees.FirstName
+FROM Orders, Employees
+WHERE Orders.EmployeeID = Employees.EmployeeID
+ORDER BY Employees.EmployeeID
