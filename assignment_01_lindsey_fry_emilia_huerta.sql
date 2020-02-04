@@ -36,8 +36,6 @@ SELECT customer_id, first_name, last_name
 FROM customer
 WHERE last_name = "Clark";
 
---Result was one name.
-
 /*
 4. Select film_id, title, rental_duration, and description for films with a rental duration of 3 days
 */
@@ -57,7 +55,6 @@ WHERE rental_duration > 1
 	AND rental_rate >= 0.99
 ORDER BY rental_rate, rental_duration;
 
-
 /*
 6. Select film_id, title, replacement_cost, and length for films that cost 9.99 or 10.99 to replace and have a running time of 60 minutes or more.
 */
@@ -66,7 +63,6 @@ SELECT film_id, title, replacement_cost, length
 FROM film
 WHERE (replacement_cost = 9.99 OR replacement_cost = 10.99)
 	AND length >= 60;
-
 
 /*
 7. Select film_id, title, replacement_cost, and rental_rate for films that cost $20 or more to replace and the cost to rent is less than a dollar.
@@ -91,9 +87,8 @@ WHERE rating NOT IN ('G', 'PG', 'PG-13');
 
 SELECT film_id, title, rental_duration
 FROM film
-WHERE rental_duration BETWEEN 5 AND 7;
-
---CHECK Returns 594 rows  -- CONFUSED
+WHERE rental_duration BETWEEN 5 AND 7
+LIMIT 1;
 
 /*
 10. INSERT your favorite movie into the film table.
@@ -106,7 +101,7 @@ INSERT INTO film
 VALUES
 ('Little Women', 'Film based on the original novel.', 2019, 1, NULL, 6, 4.99, 90, 20.99, 'PG', 'Trailers,Deleted Scenes');
 
---Check query -- WORKS 
+--Check query
 SELECT *
 FROM film
 WHERE title = 'Little Women';
@@ -132,7 +127,11 @@ WHERE first_name = 'JENNIFER';
 ALTER TABLE address
 MODIFY address2 VARCHAR(50) DEFAULT ' ';
 
---Check
+--OR
+
+SELECT address2, IFNULL(address2,'')
+FROM address;
+
 /*
 13. For rated G films less than an hour long, update the special_features column to replace Commentaries with Audio Commentary.
 Be sure the other special features are not removed. (2 points)
@@ -148,7 +147,6 @@ WHERE rating = 'G'
 */
 
 CREATE DATABASE LinkedIn;
-
 
 /*
 15. Create a user table to store LinkedIn users.
@@ -188,7 +186,7 @@ CREATE TABLE UserWorkExperience(
 REFERENCES User(UserID)
 ) ENGINE=InnoDB;
 
---Check query -- is the constraint necessary?
+--Check query
 SELECT *
 FROM UserWorkExperience;
 
@@ -213,7 +211,6 @@ INSERT INTO UserWorkExperience
 (WorkExperience, Location, Skills, Bio, UserID)
 VALUES
 ('Author', 'New York', 'Writing', 'Popular Author of new book', 1);
-
 
 /*
 19. The warehouse manager wants to know all of the products the company carries. Generate a list of all the products with all of the columns.
@@ -243,7 +240,7 @@ WHERE Title = 'Sales Representative'
 	AND Country = 'USA'
 ORDER BY HireDate, LastName;
 
---Got 3 results
+--Check query returns 3 results
 SELECT Country, Title
 FROM Employees
 WHERE Title = 'Sales Representative'
@@ -269,8 +266,6 @@ SELECT OrderID, EmployeeID
 FROM Orders
 WHERE EmployeeID = 3;
 
---Gives 127 rows
-
 /*
 24. The sales team wants to develop stronger supply chain relationships with its suppliers by reaching out to the managers who have the decision making power to create a just-in-time inventory arrangement.
 Display the supplier's company name, contact name, title, and phone number for suppliers who have manager or mgr in their title.
@@ -292,16 +287,6 @@ WHERE (QuantityPerUnit LIKE '%glass%'
 	OR QuantityPerUnit LIKE '%jar%'
   OR QuantityPerUnit LIKE '%bottle%')
   AND Discontinued = 0;
---CHECK answer and syntax/entering
-
---NEW ANSWER
-SELECT ProductName, Discontinued, QuantityPerUnit
-FROM Products
-WHERE (QuantityPerUnit LIKE '%glass%'
-       OR QuantityPerUnit LIKE '%jar%'
-       OR QuantityPerUnit LIKE '%bottle%')
-       AND Discontinued = 0
-
 
 /*
 26. How many customers are from Brazil and have a role in sales?
@@ -313,9 +298,6 @@ FROM Customers
 WHERE ContactTitle LIKE '%Sale%'
 	AND Country = 'Brazil'
 LIMIT 1;
-
---CHECK. Received 4 results. Narrow the ContactTitle to be more specific
--- Maybe use a limit?
 
 /*
 27. Who is the oldest employee in terms of age? Your query should only return 1 row.
@@ -340,12 +322,10 @@ WHERE Discount > 0;
 Your query should only return 1 row.
 */
 
-SELECT UnitPrice * UnitsInStock AS TotalDollarValue
+SELECT ProductName, UnitPrice * UnitsInStock AS TotalDollarValue
 FROM Products
-WHERE UnitsInStock > 0;
-LIMIT 1
-
---Check logic... does TotalDollarValue equal unitprice * UnitsInStock
+WHERE UnitsInStock > 0
+LIMIT 1;
 
 /*
 30. Supplier deliveries are confirmed via email and fax.
@@ -379,8 +359,6 @@ SELECT ProductName, ABS(UnitsInStock - UnitsOnOrder + ReorderLevel) AS ProductRe
 FROM Products
 WHERE Discontinued = 0
 	AND (UnitsInStock - UnitsOnOrder + ReorderLevel) <= 0;
-
---Check logic/purpose of the problem
 
 /*
 33. You're the newest hire.
@@ -431,3 +409,62 @@ WHERE PhotoPath LIKE('%.bmp');
 --Check query
 SELECT PhotoPath
 FROM Employees;
+
+/*
+Custom Data Requests
+Create 6 data requests on the SpecialtyFood database. For each request,
+1) write out a question to specify the required data
+2) give a business justification. How can a manager use the data for better decision making?
+3) Write the SQL used to produce the final data set.
+4) Export the final data set to a CSV file then convert it to an Excel spreadsheet with a .xlsx file extension.
+*/
+
+/*
+Data Request 1
+Question: Which suppliers are outside of the United States?
+Business Justification: The manager can use this data to determine which suppliers they would like to keep if there is a need to cut out any.
+												This is helpful because shipping costs and phone call costs are higher in other countries.
+*/
+SELECT CompanyName, Country, Phone
+FROM Suppliers
+WHERE Country <> 'USA'
+ORDER BY Country, CompanyName;
+
+/*
+Data Request #2
+Question: Which customers have the most orders?
+Business Justification: This will help managers see which customers are making the most orders.
+												They can use this to market more strongly to these customers or give them discounts to keep their business.
+*/
+
+SELECT Orders.OrderID, Customers.CompanyName
+FROM Orders, Customers
+WHERE Orders.CustomerID = Customers.CustomerID
+ORDER BY Customers.CompanyName;
+
+/*
+Data Request #3
+Question: Which suppliers have supplied our various products?
+Business Justification: This shows which suppliers supplied which products in addition to the categories those products are placed in.
+												This is helpful because in the future, the company can decide which supplier to use based on the product or the category.
+*/
+
+SELECT ProductName, SupplierID, CategoryID
+FROM Products
+ORDER BY SupplierID, CategoryID;
+
+/*
+Data Request #4
+Question: How much money have we made on each order?
+Business Justification: Will show us which orders made us the most money. We can then go in a track which customers made which orders
+*/
+
+SELECT OrderID, (UnitPrice - (UnitPrice * Discount)) * Quantity AS AmountSpent
+FROM OrderDetails
+ORDER BY (UnitPrice - (UnitPrice * Discount)) * Quantity DESC, OrderID
+
+--Query used to grab the company name
+SELECT Orders.OrderID, Customers.CompanyName
+FROM Orders, Customers
+WHERE Orders.CustomerID = Customers.CustomerID
+	AND Orders.OrderID = 10981;
