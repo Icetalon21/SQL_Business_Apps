@@ -7,13 +7,14 @@
 # - To save data to a dataframe
 # - To interact with an SQL database
 
-# In[76]:
+# In[141]:
 
 
 import requests
 import json
 import pandas as pd
 from sqlalchemy import create_engine
+from datetime import datetime
 
 
 # ### Make a single API request and save the results to the nyt_article table
@@ -61,40 +62,39 @@ articles_request.text
 
 # Decode the API result text as JSON
 
-# In[100]:
+# In[197]:
+
+
+json.loads(articles_request.text)
+
+
+# Assign the decoded API request JSON result to a variable
+
+# In[198]:
 
 
 decoded_articles_request_text = json.loads(articles_request.text)
 
 
-# Assign the decoded API request JSON result to a variable
+# Print out the dictionary value for the key containing the list of articles in the decoded API request JSON result
 
-# In[126]:
+# In[200]:
+
+
+decoded_articles_request_text['response']['docs']
+
+
+# Assign the list of articles to a variable that will be later used to loop through
+
+# In[202]:
 
 
 articles = decoded_articles_request_text['response']['docs']
 
 
-# Print out the dictionary value for the key containing the list of articles in the decoded API request JSON result
-
-# In[127]:
-
-
-type(articles)
-
-
-# Assign the list of articles to a variable that will be later used to loop through
-
-# In[137]:
-
-
-for article in articles:
-    print(article['_id'])
-
-
 # Confirm the type of variable for the list of articles variable
 
-# In[139]:
+# In[203]:
 
 
 type(articles)
@@ -110,13 +110,13 @@ type(articles)
 #     - Print out the variable value
 #     - To delimit each article, print out a line of repeating non-alphanumeric characters of your choice
 
-# In[136]:
+# In[204]:
 
 
 nyt_article_data = {
     '_id':[], 
     'web_url':[],
-    'headline':[],
+    'main':[],
     'document_type':[],
     'pub_date':[],
     'word_count':[],
@@ -132,15 +132,16 @@ for article in articles:
     nyt_article_data['web_url'].append(web_url)
     print (web_url)
     
-    headline = article['headline']
-    nyt_article_data['headline'].append(headline)
-    print (headline)
+    main = article['headline']['main']
+    nyt_article_data['main'].append(main)
+    print (main)
     
     document_type = article['document_type']
     nyt_article_data['document_type'].append(document_type)
     print (document_type)
     
     pub_date = article['pub_date']
+    datetime.strptime(pub_date, '%Y-%m-%dT%H:%M:%S%z')
     nyt_article_data['pub_date'].append(pub_date)
     print (pub_date)
     
@@ -157,36 +158,37 @@ for article in articles:
 
 # Print out the contents of the article details dictionary
 
-# In[ ]:
+# In[205]:
 
 
-
+print(nyt_article_data)
 
 
 # Assign the article details dictionary to a dataframe
 
-# In[ ]:
+# In[206]:
 
 
-
+df = pd.DataFrame(nyt_article_data)
+df.to_csv('NYTArticleDetailsDictionary.csv', index=False)
 
 
 # Print out the first 5 rows of the dataframe
 
-# In[ ]:
+# In[208]:
 
 
-
+df.head(5)
 
 
 # Establish a connection to your assignment_02 database.
 # 
 # Append ?charset=utf8 to the database name to avoide codec errors.
 
-# In[ ]:
+# In[209]:
 
 
-
+engine = create_engine('mysql+mysqldb://lindseyf_dba:sql_2020@lindseyfry.lmu.build/lindseyf_assignment_02?charset=utf8')
 
 
 # Insert the dataframe contents to the nyt_article table you previously created.
@@ -197,10 +199,10 @@ for article in articles:
 # 
 # Do not insert the dataframe's index column.
 
-# In[ ]:
+# In[210]:
 
 
-
+df.to_sql('nyt_article', con = engine, if_exists='append', index = False)
 
 
 # ---
@@ -220,42 +222,67 @@ for article in articles:
 # 
 # Replace the placeholders denoted by \~ALL_CAPS\~.
 
-# In[ ]:
+# In[217]:
 
 
-for ~PAGE_VARIABLE~ in range(10):
-    print('Page:', ~PAGE_VARIABLE~)
+for page in range(10):
+    print('Page:', page)
         
-    api_url = ~API_ENDPOINT_URL~
-    params = {'api-key':~API_KEY~, 'page':~PAGE_VARIABLE~, 'begin_date':~BEGIN_DATE~, 'end_date':~END_DATE~, 'q':~KEYWORD~}
+    api_url = 'https://api.nytimes.com/svc/search/v2/articlesearch.json'
+    params = {'api-key':'sgBFDFyjvlJyF1xsAcUDZUQV2neZzQ1r', 'page':page, 'begin_date':'20190101', 'end_date':'20191231', 'q':'Los Angeles'}
 
-    ~MAKE_API_REQUEST~
+    articles_request = requests.get(api_url, params=params)
 
-    ~DECODE_JSON_API_REQUESTS_RESULTS_AND_ASSIGN_TO_A_VARIABLE~
+    decoded_articles_request_text = json.loads(articles_request.text)
 
-    ~ASSIGN_ARTICLES_LIST_TO_A_VARIABLE~
+    articles = decoded_articles_request_text['response']['docs']
 
-    ~INITIALIZE_DICTIONARY_TO_STORE_ARTICLE_DETAILS~
+    nyt_article_data = {
+    '_id':[], 
+    'web_url':[],
+    'main':[],
+    'document_type':[],
+    'pub_date':[],
+    'word_count':[],
+    'type_of_material':[]
+    }
 
-    ~LOOP_THROUGH_ARTICLES~
+    for article in articles:
+        _id = article['_id']
+        nyt_article_data['_id'].append(_id)
+        print (_id)
+
+        web_url = article['web_url']
+        nyt_article_data['web_url'].append(web_url)
+        print (web_url)
+
+        main = article['headline']['main']
+        nyt_article_data['main'].append(main)
+        print (main)
+
+        document_type = article['document_type']
+        nyt_article_data['document_type'].append(document_type)
+        print (document_type)
+
+        pub_date = article['pub_date']
+        datetime.strptime(pub_date, '%Y-%m-%dT%H:%M:%S%z')
+        nyt_article_data['pub_date'].append(pub_date)
+        print (pub_date)
+
+        word_count = article['word_count']
+        nyt_article_data['word_count'].append(word_count)
+        print (word_count)
+
+        type_of_material = article['type_of_material']
+        nyt_article_data['type_of_material'].append(type_of_material)
+        print (type_of_material)
+
+        print('*****************************')
         
-        ~WEB_URL~
-        
-        ~MAIN_HEADLINE~
-        
-        ~DOCUMENT_TYPE~
-
-        ~PUB_DATE~
-
-        ~WORD_COUNT~
-
-        ~TYPE_OF_MATERIAL~
-
-        ~PRINT_NONALPHANUMERIC_ARTICLE_DELIMITER~
-        
-    ~ASSIGN_ARTICLES_DICTIONARY_TO_A_DATAFRAME~
+    df = pd.DataFrame(nyt_article_data)
+    df.to_csv('NYTArticleDetailsDictionary.csv', index=False)
     
-    ~INSERT_DATAFRAME_INTO_nyt_article_TABLE_WITH_if_exists_append_OPTION~
+    df.to_sql('nyt_article', con = engine, if_exists='append', index = False)
     
 
 
