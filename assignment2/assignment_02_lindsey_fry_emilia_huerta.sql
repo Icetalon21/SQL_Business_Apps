@@ -8,17 +8,46 @@ Password: sql_2020
 3. Create a table named nyt_article with a column for each of these JSON keys in the API result
 */
 CREATE TABLE nyt_article(
-    nyt_article_id INT(11) NOT NULL AUTO_INCREMENT,
+    _id INT(11) NOT NULL AUTO_INCREMENT,
     web_url VARCHAR(255) NOT NULL,
-    main_headline VARCHAR(255) NOT NULL,
+    main VARCHAR(255) NOT NULL,
     document_type VARCHAR(255) NOT NULL,
     pub_date VARCHAR(255) NOT NULL,
     word_count INT(11) NOT NULL,
     type_of_material VARCHAR(255) NOT NULL,
-    CreatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (nyt_article_id),
     UNIQUE KEY (web_url)
     ) ENGINE=InnoDB;
+
+/*
+5. How many articles were published between December 1, 2019 and December 25, 2019 in the nyt_article table?
+*/
+SELECT COUNT(DISTINCT _id), pub_date
+FROM nyt_article
+WHERE pub_date BETWEEN '2019-12-1' AND '2019-12-25';
+
+/*
+6. What is the average word count per article for articles published on and after November 2, 2019 in the nyt_article table?
+*/
+SELECT AVG(word_count), pub_date, _id
+FROM nyt_article
+WHERE pub_date >= '2019-11-2';
+--Add GROUP BY?
+
+/*
+7. What is the minimum and maximum pub_date for articles published between October 1, 2019 and October 31, 2019 in the nyt_article table?
+*/
+SELECT MIN(pub_date), MAX(pub_date)
+FROM nyt_article
+WHERE pub_date BETWEEN '2019-10-01' AND '2019-10-31';
+--Check Logic?
+
+/*
+8.How many total words were published for articles published in November 2019 in the nyt_article table?
+*/
+SELECT SUM(word_count)
+FROM `nyt_article`
+WHERE pub_date BETWEEN '2019-11-01' AND '2019-11-30';
 
 /*
 9. Display the agents' full name as a single column and the engagement dates they booked where the negotiated price is over $1k.
@@ -156,10 +185,46 @@ WHERE (Agents.CommissionRate * Engagements.ContractPrice)>500
 */
 CREATE TABLE simplyhired_job(
     simplyhired_job_id INT(11) NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    company VARCHAR(255) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    link VARCHAR(255) NOT NULL,
-    CreatedOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    job_title VARCHAR(255) NOT NULL,
+    job_company VARCHAR(255) NOT NULL,
+    job_location VARCHAR(255) NOT NULL,
+    job_link VARCHAR(255) NOT NULL,
     PRIMARY KEY (simplyhired_job_id)
     ) ENGINE=InnoDB;
+
+/*
+# Data Request 1
+Question: What is the membership status of each Entertainer?
+
+Business Justification: This allows the business to evaluate the purpose of the membership.
+                        With this information, they can add benefits and incentives to the membership status.
+                        They can also market more toward the entertainers who do not have a membership.
+*/
+SELECT Entertainer_Members.Status, Entertainers.EntertainerID, Entertainers.EntStageName
+FROM Entertainer_Members
+JOIN Entertainers
+	ON Entertainer_Members.EntertainerID = Entertainers.EntertainerID
+GROUP BY Entertainers.EntertainerID;
+
+/*
+# Data Request 2
+Question: What are the music styles customers want to order AND what music styles do we have entertainers for?
+
+Business Justification: This allows the company to understand the demand of entertainers.
+                        With this information, they can hire more entertainers to meet the demand.
+*/
+SELECT Customers.CustomerID, Customers.CustFirstName, Customers.CustLastName, Musical_Styles.StyleName
+FROM Customers
+JOIN Musical_Preferences
+	ON Customers.CustomerID = Musical_Preferences.CustomerID
+JOIN Musical_Styles
+	ON Musical_Preferences.StyleID = Musical_Styles.StyleID
+ORDER BY Musical_Styles.StyleName;
+
+SELECT Entertainers.EntertainerID, Entertainers.EntStageName, Musical_Styles.StyleName
+FROM Entertainers
+JOIN Entertainer_Styles
+	ON Entertainers.EntertainerID = Entertainer_Styles.EntertainerID
+JOIN Musical_Styles
+	ON Entertainer_Styles.StyleID = Musical_Styles.StyleID
+ORDER BY Musical_Styles.StyleName;
