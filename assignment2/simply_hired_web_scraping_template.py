@@ -7,35 +7,36 @@
 # - To interact with an SQL database
 # - To parse web pages
 
-# In[22]:
+# In[39]:
 
 
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
+from sqlalchemy import create_engine
 
 
 # ### Web scrape a single web page and save the results to the simplyhired_job table
 
 # Set a variable to store the web page URL
 
-# In[71]:
+# In[2]:
 
 
-url = 'https://www.simplyhired.com'
+url = 'https://www.simplyhired.com/search'
 
 
 # Set a dict of parameters to pass to the URL
 
-# In[72]:
+# In[43]:
 
 
-params=dict(query='web scraping')
+params=dict(q='SQL')
 
 
 # Make a GET request with the defined URL and the dict of parameters
 
-# In[124]:
+# In[4]:
 
 
 extended_request = requests.get(url, params=dict(q='SQL'))
@@ -43,7 +44,7 @@ extended_request = requests.get(url, params=dict(q='SQL'))
 
 # Confirm the GET request received a 200 HTTP status code
 
-# In[117]:
+# In[5]:
 
 
 extended_request
@@ -51,7 +52,7 @@ extended_request
 
 # View the text in the GET request result
 
-# In[118]:
+# In[6]:
 
 
 extended_request.text
@@ -59,7 +60,7 @@ extended_request.text
 
 # Create an object of the BeautifulSoup class to parse the web page text with the html.parser parser option
 
-# In[119]:
+# In[7]:
 
 
 soup = BeautifulSoup(extended_request.text, 'html.parser')
@@ -67,7 +68,7 @@ soup = BeautifulSoup(extended_request.text, 'html.parser')
 
 # Print the BeautifulSoup object as a nicely (pretty) formatted string
 
-# In[120]:
+# In[8]:
 
 
 print(soup.prettify())
@@ -79,15 +80,15 @@ print(soup.prettify())
 # 
 # Do a findAll to assign a list of jobs to a variable.
 
-# In[136]:
+# In[12]:
 
 
-jobs = soup.find_all('div', attrs={'class':'HomepageSerp-content'})
+jobs = soup.find('main', attrs={'id':'job-list'})
 
 
 # Print out the variable containing the list of jobs
 
-# In[137]:
+# In[13]:
 
 
 print(jobs)
@@ -102,52 +103,70 @@ print(jobs)
 #     - Print out the variable value
 #     - To delimit each article, print out a line of repeating non-alphanumeric characters of your choice
 
-# In[138]:
+# In[63]:
 
 
+job_details = {
+    'job_title':[],
+    'job_company':[],
+    'job_location':[],
+    'job_link':[]
+}
 for job in jobs:
     print(job)
     
-    job_title = job.find('div', attrs={'class':'jobposting-title-container'})
+    job_title = job.find('h2', attrs={'class':'jobposting-title'}).text
+    job_details['job_title'].append(job_title)
     print('Job Title:', job_title)
     
-    job_link = job.findAll('a', attrs={'rel':'nofollow'})
+    job_company = job.find('span', attrs={'class':'jobposting-company'}).text
+    job_details['job_company'].append(job_company)
+    print('Job Company:', job_company)
+    
+    job_location = job.find('span', attrs={'class':'jobposting-location'}).text
+    job_details['job_location'].append(job_location)
+    print('Job Location:', job_location)
+    
+    job_link = job.find('a', attrs={'rel':'nofollow','class':'card-link'}).text
+    job_details['job_link'].append(job_link)
     print('Job Link:', job_link)
+    
     print('*** *** *** *** *** ***')
 
 
 # Print out the contents of the job details dictionary
 
-# In[ ]:
+# In[64]:
 
 
-
+print(job_details)
 
 
 # Assign the job details dictionary to a dataframe
 
-# In[ ]:
+# In[69]:
 
 
-
+df=pd.DataFrame(job_details)
+df.to_csv('job_details.csv', index = False)
 
 
 # Print out the first 5 rows of the dataframe
 
-# In[ ]:
+# In[65]:
 
 
-
+df.head(5)
 
 
 # Establish a connection to your assignment_02 database.
 # 
 # Append ?charset=utf8 to the database name to avoide codec errors.
 
-# In[ ]:
+# In[66]:
 
 
-
+engine = create_engine('mysql+mysqldb://lindseyf_dba:sql_2020@lindseyfry.lmu.build/lindseyf_assignment_02?charset=utf8')
 
 
 # Insert the dataframe contents to the simplyhired_job table you previously created.
@@ -158,10 +177,10 @@ for job in jobs:
 # 
 # Do not insert the dataframe's index column.
 
-# In[ ]:
+# In[67]:
 
 
-
+df.to_sql('simplyhired_job', con = engine, if_exists='append', index = False)
 
 
 # ### Clear out the simplyhired_job table before proceeding. 
@@ -177,38 +196,53 @@ for job in jobs:
 # 
 # Replace the placeholders denoted by \~ALL_CAPS\~.
 
-# In[ ]:
+# In[70]:
 
 
-for ~PAGE_VARIABLE~ in range(1,11):
-    print('Page:', ~PAGE_VARIABLE~)
+for pn in range(1,11):
+    print('Page:', pn)
     
-    url = ~WEB_PAGE_URL~
-    params = {'q':~KEYWORD~, 'pn':~PAGE_VARIABLE~}
+    url = 'https://www.simplyhired.com/search'
+    params = {'q':'SQL', 'pn':pn}
     
-    ~MAKE_WEB_PAGE_REQUEST~
+    extended_request = requests.get(url, params=dict(q='SQL'))
     
-    ~CREATE_BEAUTIFULSOUP_OBJECT_TO_PARSE_WEB_PAGE~
+    soup = BeautifulSoup(extended_request.text, 'html.parser')
 
-    ~FIND_ALL_JOBS_AND_ASSIGN_TO_A_VARIABLE~
+    jobs = soup.find('main', attrs={'id':'job-list'})
 
-    ~INITIALIZE_DICTIONARY_TO_STORE_JOB_DETAILS~
+    job_details = {
+    'job_title':[],
+    'job_company':[],
+    'job_location':[],
+    'job_link':[]
+    }
 
-    ~LOOP_THROUGH_JOBS~
-    
-        ~TITLE~
+    for job in jobs:
+        print(job)
 
-        ~COMPANY~
+        job_title = job.find('h2', attrs={'class':'jobposting-title'}).text
+        job_details['job_title'].append(job_title)
+        print('Job Title:', job_title)
 
-        ~LOCATION~
+        job_company = job.find('span', attrs={'class':'jobposting-company'}).text
+        job_details['job_company'].append(job_company)
+        print('Job Company:', job_company)
 
-        ~LINK~
+        job_location = job.find('span', attrs={'class':'jobposting-location'}).text
+        job_details['job_location'].append(job_location)
+        print('Job Location:', job_location)
 
-        ~PRINT_NONALPHANUMERIC_JOB_DELIMITER~
+        job_link = job.find('a', attrs={'class':'card-link'}).text
+        job_details['job_link'].append(job_link)
+        print('Job Link:', job_link)
+
+        print('*** *** *** *** *** ***')
         
-    ~ASSIGN_JOBS_DICTIONARY_TO_A_DATAFRAME~
+    df=pd.DataFrame(job_details)
+    df.to_csv('job_details.csv', index = False)
     
-    ~INSERT_DATAFRAME_INTO_simplyhired_job_TABLE_WITH_if_exists_append_OPTION~
+    df.to_sql('simplyhired_job', con = engine, if_exists='append', index = False)
 
 
 # Confirm 100+ jobs were properly inserted into the simplyhired_job table. No need to provide proof. I will be running a SELECT on the table.
