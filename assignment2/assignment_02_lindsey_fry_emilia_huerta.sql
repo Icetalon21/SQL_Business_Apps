@@ -228,3 +228,20 @@ JOIN Entertainer_Styles
 JOIN Musical_Styles
 	ON Entertainer_Styles.StyleID = Musical_Styles.StyleID
 ORDER BY Musical_Styles.StyleName;
+
+/*agent with the most entertainers*/
+SELECT CONCAT(Agents.AgtFirstName, ' ', Agents.AgtLastName) AS AgentFullName, COUNT(Entertainers.EntertainerID) AS EntertainerCount
+FROM Agents
+LEFT JOIN Engagements
+  ON Agents.AgentID = Engagements.AgentID
+LEFT JOIN Entertainers
+  ON Entertainers.EntertainerID = Engagements.EntertainerID
+GROUP BY Agents.AgentID
+ORDER BY EntertainerCount DESC
+
+/*Which entertainer has the most engagments*/
+SELECT Entertainers.EntStageName, Engagements.AgentID, Engagements.EngagementNumber
+FROM Entertainers
+LEFT JOIN Engagements
+  ON Entertainers.EntertainerID = Engagements.EntertainerID
+ORDER BY Engagements.EngagementNumber DESC
