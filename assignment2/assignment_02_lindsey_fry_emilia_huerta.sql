@@ -229,7 +229,13 @@ JOIN Musical_Styles
 	ON Entertainer_Styles.StyleID = Musical_Styles.StyleID
 ORDER BY Musical_Styles.StyleName;
 
-/*agent with the most entertainers*/
+/*
+Data Request 3
+Question: Which agents work with the most entertainers?
+
+Business Justification: We can see which agents are most popular.
+                        To help determine why that is, we can look into the commssion rates and salaries of each agent.
+*/
 SELECT CONCAT(Agents.AgtFirstName, ' ', Agents.AgtLastName) AS AgentFullName, COUNT(Entertainers.EntertainerID) AS EntertainerCount
 FROM Agents
 LEFT JOIN Engagements
@@ -239,9 +245,18 @@ LEFT JOIN Entertainers
 GROUP BY Agents.AgentID
 ORDER BY EntertainerCount DESC
 
-/*Which entertainer has the most engagments*/
-SELECT Entertainers.EntStageName, Engagements.AgentID, Engagements.EngagementNumber
+/*
+Data Request 4
+Question: Which entertainer has the most engagements?
+
+Business Justification: We can view which entertainers get booked the most.
+                        To examine further, we can look into which style the entertainers with the most engagements have.
+*/
+SELECT Entertainers.EntStageName, SUM(Engagements.EngagementNumber) AS SumEngagements
 FROM Entertainers
 LEFT JOIN Engagements
   ON Entertainers.EntertainerID = Engagements.EntertainerID
-ORDER BY Engagements.EngagementNumber DESC
+GROUP BY Entertainers.EntStageName
+ORDER BY SumEngagements DESC
+
+
